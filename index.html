@@ -9,8 +9,224 @@
 </head>
 
 <body>
-    <main></main>
+    <main>
+        <!------- COLUMNS ---------->
+        <section id="todo">
+            <h1>TODO </h1>
+            <section class="cards">
+            </section>
+        </section>
+        <section id="progress">
+            <h1>DOING</h1>
+            <section class="cards"></section>
+        </section>
+        <section id="done">
+            <h1>DONE</h1>
+            <section class="cards"></section>
+        </section>
+
+        <section id="add">
+            <form data-state="post">
+                <fieldset>
+                    <legend>Add a new task</legend>
+
+                    <label>
+                        Title
+                    </label>
+                    <input type="text" name="title" id="title" placeholder="ex. 'GET' trello data" required>
+                    <p class="error title-err">Please pick a title for this task.</p>
+
+                    <label>
+                        Description
+                    </label>
+                    <textarea id="description" name="description" minlength="2"
+                        placeholder="ex. Description about what is missing" required></textarea>
+                    <p class="error description-err">Please describe this task.</p>
+
+                    <label>
+                        Creator
+                    </label>
+                    <select name="creator" id="creator" required>
+                        <option value="">-</option>
+                        <option value="megane">Me, myself & I</option>
+                        <option value="jonas">Jonas Holbech</option>
+                        <option value="dannie">Dannie Vinther</option>
+                    </select>
+                    <p class="error creator-err">Please pick who created this task.</p>
+
+                    <label>
+                        Deadline
+                    </label>
+                    <input type="datetime-local" name="deadline" id="deadline" required>
+                    <p class="error deadline-err">Please put in the deadline of this task.</p>
+
+                    <label>
+                        Color label</label>
+                    <input type="color" id="color">
+
+                    <button class="add-new" type="submit" disabled>Add new card</button>
+                </fieldset>
+            </form>
+        </section>
+    </main>
+
+    <template>
+        <article class="card">
+            <div class="top">
+                <h2 class="title"></h2>
+                <p class="description"></p>
+                <p class="creator">Added by: </p>
+                <button class="delete-this"><span class="material-icons">
+                        x
+                    </span></button>
+                <div class="card-nav">
+                    <span class="material-icons move-left">
+                        navigate_before
+                    </span>
+                    <span class="material-icons move-right">
+                        navigate_next
+                    </span>
+                </div>
+            </div>
+            <div class="bottom">
+                <p class="estimate"><span class="material-icons">
+                        schedule
+                    </span><span></span></p>
+                <p class="deadline"><span class="material-icons">
+                        event
+                    </span><span></span></p>
+                <p class="color"><span class="material-icons">
+                        color
+                    </span><span></span></p>
+            </div>
+        </article>
+    </template>
+
     <script src="script.js"></script>
 </body>
 
 </html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main>
+        <section id="todo">
+            <h1>TO DO</h1>
+            <section class="cards">
+            </section>
+        </section>
+        <section id="doing">
+            <h1>DOING</h1>
+            <section class="cards"></section>
+        </section>
+        <section id="done">
+            <h1>DONE</h1>
+            <section class="cards"></section>
+        </section>
+        
+        <section id="add">
+            <form data-state="post">
+                <h1>Get organised!</h1>
+        
+                <label>
+                    Title
+                </label>
+                <input type="text" name="title">
+        
+                <label>
+                    Description
+                </label>
+                <input type="text" name="description">
+        
+                <label>
+                    Deadline
+                </label>
+                <input type="datetime-local" name="deadline">
+
+                <label>
+                    Creator
+                </label>
+                <input type="text" name="creator">
+
+                <label>
+                    Creation date
+                </label>
+                <input type="date" name="creation_date">
+
+                <label>
+                    Color label
+                </label>
+                <input type="color" name="color">
+        
+                <input type="submit" value="Save">
+            </form>
+        
+            <button class="add-new">New Task</button>
+        </section>
+    </main>
+
+    <template>
+        <article class="card">
+            <div class="top">
+                <h2 class="title"></h2>
+                <p class="desc"></p>
+                <p class="creator">Added by: </p>
+                <button class="delete-this"><span class="material-icons">
+                        remove_circle_outline
+                    </span></button>
+                <div class="card-nav">
+                    <span class="material-icons move-left">
+                        navigate_before
+                    </span>
+                    <span class="material-icons move-right">
+                        navigate_next
+                    </span>
+                </div>
+            </div>
+            <div class="bottom">
+                <p class="estimate"><span class="material-icons">
+                        schedule
+                    </span><span></span></p>
+                <p class="deadline"><span class="material-icons">
+                        event
+                    </span><span></span></p>
+                <p class="priority"><span class="material-icons">
+                        priority_high
+                    </span><span></span></p>
+            </div>
+        </article>
+    </template>
+
+    <template>
+        <article>
+            <header>
+                <h1>Kanban Chart</h1>
+            </header>
+            <h2>Title:</h2>
+            <h3>Description:</h3>
+            <h3>Deadline:</h3>
+            <h3>Creator:</h3>
+            <h3>Creation date:</h3>
+            <h3>Color</h3>
+
+            <button data-action="delete" class="delete">Delete</button>
+            <button data-action="edit" class="edit">Edit</button>
+        </article>
+    </template>
+
+    <div id="taskList"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html> -->
