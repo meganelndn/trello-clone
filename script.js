@@ -1,12 +1,9 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", init);
 
-/* ---------- global variables -------- */
+/* ----------------------- global variables ------------------------ */
 const endpoint = "https://frontendspring20-34e5.restdb.io/rest/trello";
 const apiKey = "5e957564436377171a0c232c";
-const template = document.querySelector("template");
-const todoContainer = document.querySelector("#todo .cards");
-
 
 function init() {
     setUpForm();
@@ -14,16 +11,21 @@ function init() {
 }
 
 function setUpForm() {
+    /* ------------ form & elements ----------- */
     const form = document.querySelector("form");
     window.form = form;
     const elements = form.elements;
     window.elements = elements;
 
+    /* ---------- validation variables -------- */
+    const titleErr = document.querySelector(".title-err");
+    const descriptionErr = document.querySelector(".description-err");
+    const creatorErr = document.querySelector(".creator-err");
+    const deadlineErr = document.querySelector(".deadline-err");
+
+    // delete default validation
     form.setAttribute("novalidate", true);
-
-    document.querySelector("#deadline").setAttribute("min", todayDate());
-
-
+    // custom title validation
     elements.title.addEventListener("keyup", (e) => {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
@@ -35,17 +37,20 @@ function setUpForm() {
             }
 
             if (elements.title.value != "") {
-                document.querySelector(".title-err").style.display = "none";
+                titleErr.style.display = "none";
+
                 elements.title.classList.add("valid");
                 elements.title.classList.remove("invalid");
             } else {
-                document.querySelector(".title-err").style.display = "block";
+                titleErr.style.display = "block";
+
                 elements.title.classList.remove("valid");
                 elements.title.classList.add("invalid");
             }
         }
     })
 
+    // custom description validation
     elements.description.addEventListener("keyup", (e) => {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
@@ -57,23 +62,26 @@ function setUpForm() {
             }
 
             if (elements.description.checkValidity()) {
-                document.querySelector(".description-err").style.display = "none";
+                descriptionErr.style.display = "none";
+
                 elements.description.classList.add("valid");
                 elements.description.classList.remove("invalid");
             } else {
                 if (elements.description.validity.tooShort) {
-                    document.querySelector(".description-err").textContent = "Please describe the task with more than 1 character.";
+                    descriptionErr.textContent = "Please describe the task with more than 1 character.";
                 } else {
-                    document.querySelector(".description-err").textContent = "Please describe the task.";
+                    descriptionErr.textContent = "Please describe the task.";
                 }
 
-                document.querySelector(".description-err").style.display = "block";
+                descriptionErr.style.display = "block";
+
                 elements.description.classList.remove("valid");
                 elements.description.classList.add("invalid");
             }
         }
     })
 
+    // custom creator validation
     elements.creator.addEventListener("change", () => {
         if (form.checkValidity()) {
             document.querySelector(".add-new").disabled = false;
@@ -82,16 +90,19 @@ function setUpForm() {
         }
 
         if (elements.creator.value != "") {
-            document.querySelector(".creator-err").style.display = "none";
+            creatorErr.style.display = "none";
+
             elements.creator.classList.add("valid");
             elements.creator.classList.remove("invalid");
         } else {
-            document.querySelector(".creator-err").style.display = "block";
+            creatorErr.style.display = "block";
+
             elements.creator.classList.remove("valid");
             elements.creator.classList.add("invalid");
         }
     })
 
+    // custom deadline date validation
     elements.deadline.addEventListener("keyup", (e) => {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
@@ -103,18 +114,21 @@ function setUpForm() {
             }
 
             if (elements.deadline.value != "") {
-                document.querySelector(".deadline-err").style.display = "none";
+                deadlineErr.style.display = "none";
+
                 elements.deadline.classList.add("valid");
                 elements.deadline.classList.remove("invalid");
             } else {
-                document.querySelector(".deadline-err").textContent = "Please input the task deadline."
-                document.querySelector(".deadline-err").style.display = "block";
+                deadlineErr.textContent = "Please input the task deadline."
+                deadlineErr.style.display = "block";
+
                 elements.deadline.classList.remove("valid");
                 elements.deadline.classList.add("invalid");
             }
         }
     })
 
+    // custom deadline time validation
     elements.deadline.addEventListener("change", () => {
         if (form.checkValidity()) {
             document.querySelector(".add-new").disabled = false;
@@ -123,62 +137,56 @@ function setUpForm() {
         }
 
         if (elements.deadline.value != "") {
-            document.querySelector(".deadline-err").style.display = "none";
+            deadlineErr.style.display = "none";
+
             elements.deadline.classList.add("valid");
             elements.deadline.classList.remove("invalid");
         } else {
-            document.querySelector(".deadline-err").style.display = "block";
+            deadlineErr.style.display = "block";
+
             elements.deadline.classList.remove("valid");
             elements.deadline.classList.add("invalid");
         }
     })
 
-    /* elements.color.addEventListener("change", () => {
-        if (elements.color.value === "custom") {
-            console.log("working")
-            document.querySelector("#custom-color").style.display = "block";
-        }
-    }) */
-
+    // when form is submitted...
     form.addEventListener("submit", (e) => {
         e.preventDefault();
+        let validForm = true;
 
-        const formValidity = form.checkValidity();
-        if (formValidity) {
-            const data = {
-                title: elements.title.value,
-                description: elements.description.value,
-                creator: elements.creator.value,
-                deadline: elements.deadline.value,
-                deadline: elements.deadline.value,
-                color: elements.color.value,
-                dest: "todo"
-            };
+        const formElements = form.querySelectorAll("input");
+        formElements.forEach(el => {
+            el.classList.remove("invalid");
+        })
 
+        if (form.checkValidity() && validForm) {
+            if (form.dataset.state == "post") {
+                // send to database
+                postCard({
+                    title: elements.title.value,
+                    description: elements.description.value,
+                    creator: elements.creator.value,
+                    deadline: elements.deadline.value,
+                    color: elements.color.value,
+                    dest: "todo"
+                })
+            } else {
+                putCard({
+                        title: elements.title.value,
+                        description: elements.description.value,
+                        creator: elements.creator.value,
+                        deadline: elements.deadline.value,
+                        color: elements.color.value,
+                        dest: "todo"
+                    },
+                    form.dataset.id);
+            }
             clearForm();
-            postCard(data);
-        } else {
-            console.log("Not valid form");
-            if (!elements.title.checkValidity()) {
-                elements.title.classList.remove("valid");
-            }
-
-            if (!elements.description.checkValidity()) {
-                elements.description.classList.remove("valid");
-            }
-
-            if (!elements.creator.checkValidity()) {
-                elements.creator.classList.remove("valid");
-            }
-
-            if (!elements.deadline.checkValidity()) {
-                elements.deadline.classList.remove("valid");
-            }
         }
     })
 }
 
-/* -------- clear form when submitted ------ */
+/* -------- clear form once submitted ------ */
 function clearForm() {
     elements.title.value = "";
     elements.description.value = "";
@@ -202,20 +210,19 @@ function getCards() {
     fetch(endpoint, {
             method: "get",
             headers: {
-                "Content-Type": "application/json; charset=utf-8",
+                "accept": "application/json",
                 "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             }
         })
-        .then(e => e.json())
-        .then(e => showData(e));
+        .then(res => res.json())
+        .then(data => data.forEach(showCard));
 }
 
 /* ---------- "POST" -------- */
-function postCard(data) {
-    showCard(data);
+function postCard(payload) {
+    const postData = JSON.stringify(payload);
 
-    const postData = JSON.stringify(data);
     fetch(endpoint, {
             method: "post",
             headers: {
@@ -223,16 +230,19 @@ function postCard(data) {
                 "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             },
-            body: postData
+            body: postData,
         })
-        .then(e => e.json())
-        .then(e => console.log(e));
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            showCard(data)
+        });
 }
 
 /* ---------- "PUT" -------- */
-function updateCard(id, data) {
+function putCard(payload, id) {
+    const postData = JSON.stringify(payload);
 
-    const postData = JSON.stringify(data);
     fetch(endpoint + "/" + id, {
             method: "put",
             headers: {
@@ -242,35 +252,40 @@ function updateCard(id, data) {
             },
             body: postData
         })
-        .then(e => e.json())
-        .then(e => console.log(e));
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+        });
 }
+
+const template = document.querySelector("template");
+const todoContainer = document.querySelector("#todo .cards");
 
 function showData(data) {
     console.log(data);
 
     todoContainer.innerHTML = "";
 
-    data.forEach(e => showCard(e));
+    data.forEach(data => showCard(data));
 }
 
 /* ---------- template clone -------- */
-function showCard(e) {
-    let dest = e.dest;
+function showCard(card) {
+    /* let dest = card.dest; */
 
     let clone = template.cloneNode(true).content;
 
-    clone.querySelector(".card").dataset.id = e._id;
-    clone.querySelector(".title").textContent = e.title;
-    clone.querySelector(".description").textContent = e.description;
-    clone.querySelector(".creator").textContent += e.creator;
-    clone.querySelector(".deadline").textContent = " " + e.deadline;
-    clone.querySelector(".deadline").textContent = " " + formatDate(e);
-    clone.querySelector(".color").textContent = " " + e.color;
+    clone.querySelector(".card").dataset.id = card._id;
+    clone.querySelector(".title").textContent = card.title;
+    clone.querySelector(".description").textContent = card.description;
+    clone.querySelector(".creator").textContent += card.creator;
+    clone.querySelector(".deadline").textContent = card.deadline;
+    clone.querySelector(".deadline").textContent = formatDate(card);
+    clone.querySelector(".color").textContent = card.color;
 
-    clone.querySelector(`[data-action="edit"]`).addEventListener("click", e => getSingleCard(e._id, setUpFormForEdit));
+    clone.querySelector(`[data-action="edit"]`).addEventListener("click", e => getSingleCard(card._id, setUpFormForEdit));
 
-    clone.querySelector(`[data-action="delete"]`).addEventListener("click", e => deleteCard(e._id));
+    clone.querySelector(`[data-action="delete"]`).addEventListener("click", e => deleteCard(card._id));
 
     document.querySelector(".cards").appendChild(clone);
 }
@@ -283,13 +298,13 @@ function deleteCard(id) {
     fetch(endpoint + "/" + id, {
             method: "delete",
             headers: {
-                "Content-Type": "application/json; charset=utf-8",
+                "accept": "application/json",
                 "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             }
         })
-        .then(e => e.json())
-        .then(e => console.log(e));
+        .then(res => res.json())
+        .then(data => {});
 }
 
 function getSingleCard(id, callback) {
@@ -312,13 +327,19 @@ function setUpFormForEdit(data) {
     form.dataset.id = data._id;
 
     //populate form with existing data again
-    elements.title.value = data.title;
-    elements.description.value = data.description;
-    elements.creator.value = data.creator;
-    elements.deadline.value = data.deadline;
-    elements.color.value = data.color;
+    form.elements.title.value = data.title;
+    form.elements.description.value = data.description;
+    form.elements.creator.value = data.creator;
+    form.elements.deadline.value = data.deadline;
+    form.elements.color.value = data.color;
+}
 
-    /* form.elements.deadline.value = formatDate(e); */
+function formatDate(data) {
+    let fullDate = data.deadline;
+    let day = fullDate.substring(8, 10);
+    let month = fullDate.substring(5, 7);
+
+    return day + "/" + month;
 }
 
 /* ---------- drag n' drop -------- */
@@ -346,29 +367,4 @@ function dragDrop(ev) {
     ev.target.appendChild(document.getElementById(data));
     ev.stopPropagation();
     return false;
-}
-
-function todayDate() {
-    const currentDateTime = new Date();
-
-    let month = (currentDateTime.getMonth() + 1);
-    let day = currentDateTime.getDate();
-
-    if (day.toString().length === 1) {
-        day = "0" + day;
-    }
-
-    if (month.toString().length === 1) {
-        month = "0" + month;
-    }
-
-    return currentDateTime.getFullYear() + "-" + month + "-" + day;
-}
-
-function formatDate(e) {
-    let fullDate = e.deadline;
-    let day = fullDate.substring(8, 10);
-    let month = fullDate.substring(5, 7);
-
-    return day + "/" + month;
 }
