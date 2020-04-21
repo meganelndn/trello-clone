@@ -271,7 +271,6 @@ function showData(data) {
 
 /* ---------- template clone -------- */
 function showCard(card) {
-    /* let dest = card.dest; */
 
     let clone = template.cloneNode(true).content;
 
@@ -281,10 +280,9 @@ function showCard(card) {
     clone.querySelector(".creator").textContent += card.creator;
     clone.querySelector(".deadline").textContent = card.deadline;
     clone.querySelector(".deadline").textContent = formatDate(card);
-    clone.querySelector(".color").textContent = card.color;
+    /* clone.querySelector(".color").textContent = hexToRGB(color); */
 
     clone.querySelector(`[data-action="edit"]`).addEventListener("click", e => getSingleCard(card._id, setUpFormForEdit));
-
     clone.querySelector(`[data-action="delete"]`).addEventListener("click", e => deleteCard(card._id));
 
     document.querySelector(".cards").appendChild(clone);
@@ -368,3 +366,25 @@ function dragDrop(ev) {
     ev.stopPropagation();
     return false;
 }
+
+/* -------- color label output ------ */
+/* function hexToRGB(color) {
+    let r = 0,
+        g = 0,
+        b = 0;
+
+    // 3 digits
+    if (color.length == 4) {
+        r = "0x" + h[1] + h[1];
+        g = "0x" + h[2] + h[2];
+        b = "0x" + h[3] + h[3];
+
+        // 6 digits
+    } else if (color.length == 7) {
+        r = "0x" + h[1] + h[2];
+        g = "0x" + h[3] + h[4];
+        b = "0x" + h[5] + h[6];
+    }
+
+    return "rgb(" + +r + "," + +g + "," + +b + ")";
+} */
