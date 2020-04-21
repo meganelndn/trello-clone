@@ -33,7 +33,7 @@
 
         <!------- FORM FOR ADDING TASK ---------->
         <section id="add">
-            <form action="#">
+            <form data-state="post">
                 <fieldset>
                     <legend class="new">Add a new card</legend>
 
@@ -81,16 +81,16 @@
 
     <!------- TEMPLATE FOR CARDS ---------->
     <template>
-        <article class="card" class="drag" id="card" draggable="true" ondragstart="return dragStart(event)">
+        <article data-id class="card" class="drag" id="card" draggable="true" ondragstart="return dragStart(event)">
             <div class="top">
                 <h2 class="title"></h2>
                 <p class="description"></p>
                 <img src="icons/person.png" alt="icon" class="icon-person">
                 <p class="creator"></p>
-                <button data-action="delete" class="delete-this">
+                <button data-id data-action="delete" class="delete-this">
                     x
                 </button>
-                <button data-action="edit" class="edit-this">
+                <button data-id data-action="edit" class="edit-this">
                     ~
                 </button>
                 <img src="icons/time.png" alt="icon" class="icon-time">

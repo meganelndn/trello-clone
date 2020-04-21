@@ -2,24 +2,24 @@
 document.addEventListener("DOMContentLoaded", init);
 
 /* ---------- global variables -------- */
-const HTML = {};
 const endpoint = "https://frontendspring20-34e5.restdb.io/rest/trello";
 const apiKey = "5e957564436377171a0c232c";
-let elements;
+const template = document.querySelector("template");
+const todoContainer = document.querySelector("#todo .cards");
 
 
 function init() {
-    HTML.temp = document.querySelector("template");
-    HTML.todoContainer = document.querySelector("#todo .cards");
-    HTML.form = document.querySelector("form");
-    elements = HTML.form.elements;
-
     setUpForm();
     getCards();
 }
 
 function setUpForm() {
-    HTML.form.setAttribute("novalidate", true);
+    const form = document.querySelector("form");
+    window.form = form;
+    const elements = form.elements;
+    window.elements = elements;
+
+    form.setAttribute("novalidate", true);
 
     document.querySelector("#deadline").setAttribute("min", todayDate());
 
@@ -28,7 +28,7 @@ function setUpForm() {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
         } else {
-            if (HTML.form.checkValidity()) {
+            if (form.checkValidity()) {
                 document.querySelector(".add-new").disabled = false;
             } else {
                 document.querySelector(".add-new").disabled = true;
@@ -50,7 +50,7 @@ function setUpForm() {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
         } else {
-            if (HTML.form.checkValidity()) {
+            if (form.checkValidity()) {
                 document.querySelector(".add-new").disabled = false;
             } else {
                 document.querySelector(".add-new").disabled = true;
@@ -75,7 +75,7 @@ function setUpForm() {
     })
 
     elements.creator.addEventListener("change", () => {
-        if (HTML.form.checkValidity()) {
+        if (form.checkValidity()) {
             document.querySelector(".add-new").disabled = false;
         } else {
             document.querySelector(".add-new").disabled = true;
@@ -96,7 +96,7 @@ function setUpForm() {
         if (e.keyCode === 9 || e.keyCode === 16) {
 
         } else {
-            if (HTML.form.checkValidity()) {
+            if (form.checkValidity()) {
                 document.querySelector(".add-new").disabled = false;
             } else {
                 document.querySelector(".add-new").disabled = true;
@@ -116,7 +116,7 @@ function setUpForm() {
     })
 
     elements.deadline.addEventListener("change", () => {
-        if (HTML.form.checkValidity()) {
+        if (form.checkValidity()) {
             document.querySelector(".add-new").disabled = false;
         } else {
             document.querySelector(".add-new").disabled = true;
@@ -133,10 +133,17 @@ function setUpForm() {
         }
     })
 
-    HTML.form.addEventListener("submit", (e) => {
+    /* elements.color.addEventListener("change", () => {
+        if (elements.color.value === "custom") {
+            console.log("working")
+            document.querySelector("#custom-color").style.display = "block";
+        }
+    }) */
+
+    form.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const formValidity = HTML.form.checkValidity();
+        const formValidity = form.checkValidity();
         if (formValidity) {
             const data = {
                 title: elements.title.value,
@@ -239,8 +246,40 @@ function updateCard(id, data) {
         .then(e => console.log(e));
 }
 
+function showData(data) {
+    console.log(data);
+
+    todoContainer.innerHTML = "";
+
+    data.forEach(e => showCard(e));
+}
+
+/* ---------- template clone -------- */
+function showCard(e) {
+    let dest = e.dest;
+
+    let clone = template.cloneNode(true).content;
+
+    clone.querySelector(".card").dataset.id = e._id;
+    clone.querySelector(".title").textContent = e.title;
+    clone.querySelector(".description").textContent = e.description;
+    clone.querySelector(".creator").textContent += e.creator;
+    clone.querySelector(".deadline").textContent = " " + e.deadline;
+    clone.querySelector(".deadline").textContent = " " + formatDate(e);
+    clone.querySelector(".color").textContent = " " + e.color;
+
+    clone.querySelector(`[data-action="edit"]`).addEventListener("click", e => getSingleCard(e._id, setUpFormForEdit));
+
+    clone.querySelector(`[data-action="delete"]`).addEventListener("click", e => deleteCard(e._id));
+
+    document.querySelector(".cards").appendChild(clone);
+}
+
 /* ---------- "DELETE" -------- */
 function deleteCard(id) {
+
+    document.querySelector(`article[data-id="${id}"]`).remove();
+
     fetch(endpoint + "/" + id, {
             method: "delete",
             headers: {
@@ -251,42 +290,35 @@ function deleteCard(id) {
         })
         .then(e => e.json())
         .then(e => console.log(e));
-
-    //remove selected card from restdb
-    document.querySelector(`article[data-id="${id}"]`).remove();
 }
 
-function showData(data) {
-    console.log(data);
-
-    HTML.todoContainer.innerHTML = "";
-
-    data.forEach(e => showCard(e));
+function getSingleCard(id, callback) {
+    fetch(endpoint + "/" + id, {
+            method: "get",
+            headers: {
+                "accept": "application/json",
+                "x-apikey": apiKey,
+                "cache-control": "no-cache",
+            }
+        })
+        .then(res => res.json())
+        .then(data => callback(data));
 }
 
-/* ---------- template clone -------- */
-function showCard(e) {
-    let dest = e.dest;
+function setUpFormForEdit(data) {
+    const form = document.querySelector("form");
 
-    let clone = HTML.temp.cloneNode(true).content;
+    form.dataset.state = "edit";
+    form.dataset.id = data._id;
 
-    clone.querySelector(".card").dataset.id = e._id;
-    clone.querySelector(".title").textContent = e.title;
-    clone.querySelector(".description").textContent = e.description;
-    clone.querySelector(".creator").textContent += e.creator;
-    clone.querySelector(".deadline").textContent = " " + e.deadline + "h";
-    clone.querySelector(".deadline").textContent = " " + formatDate(e);
-    clone.querySelector(".color").textContent = " " + e.color;
+    //populate form with existing data again
+    elements.title.value = data.title;
+    elements.description.value = data.description;
+    elements.creator.value = data.creator;
+    elements.deadline.value = data.deadline;
+    elements.color.value = data.color;
 
-    clone.querySelector("button.edit-this").addEventListener("click", () => {
-        updateCard(e._id);
-    })
-
-    clone.querySelector("button.delete-this").addEventListener("click", () => {
-        deleteCard(e._id);
-    })
-
-    document.querySelector(".cards").appendChild(clone);
+    /* form.elements.deadline.value = formatDate(e); */
 }
 
 /* ---------- drag n' drop -------- */
