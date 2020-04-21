@@ -54,7 +54,7 @@ main .cards {
 main .card {
     position: relative;
     background-color: lightgray;
-    padding: 30px;
+    padding: 40px;
     border-radius: 5px;
     margin-bottom: 10px;
     cursor: pointer;
@@ -96,8 +96,8 @@ main .card .creator {
 
 main .card .delete-this {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 10px;
     background-color: transparent;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -108,10 +108,15 @@ main .card .delete-this {
     color: rgb(46, 44, 44);
 }
 
+main .card .delete-this:hover,
+main .card .edit-this:hover {
+    color: darkgoldenrod;
+}
+
 main .card .edit-this {
     position: absolute;
-    top: 20px;
-    right: 40px;
+    top: 15px;
+    right: 25px;
     background-color: transparent;
     -webkit-appearance: none;
     -moz-appearance: none;
