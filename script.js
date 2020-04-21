@@ -287,7 +287,33 @@ function showCard(e) {
     })
 
     document.querySelector(".cards").appendChild(clone);
-    /* onDragStart(event); */
+}
+
+/* ---------- drag n' drop -------- */
+/* https://codepen.io/jdigi/pen/cqxCJ */
+function dragStart(ev) {
+    ev.dataTransfer.effectAllowed = 'move';
+    ev.dataTransfer.setData("Text", ev.target.getAttribute('id'));
+    ev.dataTransfer.setDragImage(ev.target, 50, 50);
+    return true;
+}
+
+// these functions prevents default behavior of browser
+function dragEnter(ev) {
+    ev.preventDefault();
+    return true;
+}
+
+function dragOver(ev) {
+    ev.preventDefault();
+}
+
+// function defined for when drop element on target
+function dragDrop(ev) {
+    var data = ev.dataTransfer.getData("Text");
+    ev.target.appendChild(document.getElementById(data));
+    ev.stopPropagation();
+    return false;
 }
 
 function todayDate() {
@@ -313,10 +339,4 @@ function formatDate(e) {
     let month = fullDate.substring(5, 7);
 
     return day + "/" + month;
-}
-
-function onDragStart(event) {
-    event
-        .dataTransfer
-        .setData('text/plain', event.target.id).backgroundColor = 'yellow';
 }

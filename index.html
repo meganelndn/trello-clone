@@ -12,17 +12,23 @@
     <main>
         <!------- COLUMNS ---------->
         <section id="todo">
-            <h1 class="todo">TODO </h1>
-            <section class="cards">
+            <h1 class="todo">TODO</h1>
+            <section class="cards" id="dropIt" ondragenter="return dragEnter(event)" ondrop="return dragDrop(event)"
+                ondragover="return dragOver(event)">
             </section>
         </section>
         <section id="doing">
             <h1 class="doing">DOING</h1>
-            <section class="cards"></section>
+            <section class="cards" id="dropIt" ondragenter="return dragEnter(event)" ondrop="return dragDrop(event)"
+                ondragover="return dragOver(event)">
+            </section>
         </section>
         <section id="done">
             <h1 class="done">DONE</h1>
-            <section class="cards"></section>
+            <section class="cards" id="dropIt" ondragenter="return dragEnter(event)" ondrop="return dragDrop(event)"
+                ondragover="return dragOver(event)">
+
+            </section>
         </section>
 
         <!------- FORM FOR ADDING TASK ---------->
@@ -75,8 +81,7 @@
 
     <!------- TEMPLATE FOR CARDS ---------->
     <template>
-        <article class="card">
-            <span id="drag" draggable="true"></span>
+        <article class="card" class="drag" id="card" draggable="true" ondragstart="return dragStart(event)">
             <div class="top">
                 <h2 class="title"></h2>
                 <p class="description"></p>

@@ -58,6 +58,15 @@ main .card {
     border-radius: 5px;
     margin-bottom: 10px;
     cursor: pointer;
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    -ms-transition: background-color 0.25s ease-in;
+    -o-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;
+}
+
+main .card:hover {
+    opacity: 90%;
 }
 
 main .card h2 {
