@@ -7,6 +7,7 @@
 body {
     margin: 0;
     background-color: #272727;
+
 }
 
 html {
@@ -24,7 +25,8 @@ main {
 }
 
 main section {
-    background-color: #4b4b4b;
+    height: calc(100vh - 20px);
+    border: 2px solid #4b4b4b;
     padding: 0 20px;
     border-radius: 5px;
 }
@@ -32,49 +34,61 @@ main section {
 main section h1 {
     font-size: 3rem;
     color: white;
+    padding: 0 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #4b4b4b;
 }
 
 main .cards {
-    height: auto;
-    padding: 0;
-    overflow: scroll;
     height: calc(100vh - 130px);
+    border: none;
+}
+
+#todo,
+#doing,
+#done {
+    padding: 10px;
+    overflow: scroll;
 }
 
 main .card {
-    margin-bottom: 10px;
-}
-
-main .card .top {
     position: relative;
-    background-color: white;
-    padding: 35px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    background-color: lightgray;
+    padding: 30px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
 }
 
-main .card .top h2 {
+main .card h2 {
     margin-top: 0;
-    font-size: 2rem;
-    margin-bottom: 5px;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: black;
 }
 
-main .card .top p {
+main .card p {
     font-weight: 300;
     margin: 5px 0;
-    font-size: 1.6rem;
+    font-size: 1.3rem;
+    color: rgb(46, 44, 44);
 }
 
-main .card .top .creator {
+main .card p.description {
+    padding-bottom: 20px;
+    border-bottom: 1px solid darkgrey;
+}
+
+main .card .creator {
     font-style: italic;
     font-size: 1.2rem;
     margin-top: 15px;
 }
 
-main .card .top .delete-this {
+main .card .delete-this {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 20px;
+    right: 20px;
     background-color: transparent;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -82,56 +96,26 @@ main .card .top .delete-this {
     border: none;
     outline: none;
     cursor: pointer;
+    color: rgb(46, 44, 44);
 }
 
-main .card .top .card-nav {
+main .card .edit-this {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-}
-
-main .card .top .card-nav span {
+    top: 20px;
+    right: 40px;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    outline: none;
     cursor: pointer;
-}
-
-main .card .top .card-nav .visible {
-    opacity: 1;
-    cursor: pointer;
-}
-
-main .card .top .card-nav .hidden {
-    opacity: 0;
-    cursor: default;
-}
-
-main .card .bottom {
-    background-color: #F1F1F1;
-    padding: 30px 20px;
-    font-weight: 300;
-    font-size: 1.6rem;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-pack: distribute;
-    justify-content: space-around;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-main .card .bottom p {
-    margin: 0;
-}
-
-main .card .bottom .material-icons {
-    -webkit-transform: translateY(6px);
-    transform: translateY(6px);
+    color: rgb(46, 44, 44);
 }
 
 main #add {
     background-color: transparent;
+    padding-top: 10px;
 }
 
 form {
@@ -142,11 +126,21 @@ form fieldset {
     border: none;
 }
 
+form fieldset legend.new {
+    font-size: 2.4rem;
+    font-weight: bold;
+    padding-bottom: 23px;
+    border-bottom: 1px solid #4b4b4b;
+    color: white;
+    width: 300px;
+}
+
 form fieldset legend {
-    font-size: 3rem;
+    text-transform: uppercase;
+    font-size: 1.7rem;
     font-weight: bold;
     padding: 0;
-    margin-bottom: 10px;
+    margin: 30px 0 10px 0;
     color: white;
 }
 
@@ -227,8 +221,35 @@ form fieldset .error {
     display: none;
 }
 
+legend.new:before {
+    content: "+ ";
+}
+
+p.deadline,
+p.color,
+p.creator {
+    display: inline-flex;
+    padding-right: 10px;
+    border: none;
+}
+
 #color {
     width: 90px;
     padding: 0;
     background: none;
+}
+
+.icon-person {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-time {
+    width: 15px;
+    height: 15px;
+}
+
+.icon-color {
+    width: 15px;
+    height: 15px;
 }

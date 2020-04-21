@@ -1,42 +1,24 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", init);
 
+/* ---------- global variables -------- */
 const HTML = {};
 const endpoint = "https://frontendspring20-34e5.restdb.io/rest/trello";
 const apiKey = "5e957564436377171a0c232c";
 let elements;
 
-function init() {
-    console.log("ready to roll!");
 
+function init() {
     HTML.temp = document.querySelector("template");
     HTML.todoContainer = document.querySelector("#todo .cards");
     HTML.form = document.querySelector("form");
     elements = HTML.form.elements;
 
-    formInteractive();
-    get();
+    setUpForm();
+    getCards();
 }
 
-
-function todayDate() {
-    const currentDateTime = new Date();
-
-    let month = (currentDateTime.getMonth() + 1);
-    let day = currentDateTime.getDate();
-
-    if (day.toString().length === 1) {
-        day = "0" + day;
-    }
-
-    if (month.toString().length === 1) {
-        month = "0" + month;
-    }
-
-    return currentDateTime.getFullYear() + "-" + month + "-" + day;
-}
-
-function formInteractive() {
+function setUpForm() {
     HTML.form.setAttribute("novalidate", true);
 
     document.querySelector("#deadline").setAttribute("min", todayDate());
@@ -80,9 +62,9 @@ function formInteractive() {
                 elements.description.classList.remove("invalid");
             } else {
                 if (elements.description.validity.tooShort) {
-                    document.querySelector(".description-err").textContent = "Please descriptionribe the task with more than 1 character.";
+                    document.querySelector(".description-err").textContent = "Please describe the task with more than 1 character.";
                 } else {
-                    document.querySelector(".description-err").textContent = "Please descriptionribe the task.";
+                    document.querySelector(".description-err").textContent = "Please describe the task.";
                 }
 
                 document.querySelector(".description-err").style.display = "block";
@@ -125,20 +107,7 @@ function formInteractive() {
                 elements.deadline.classList.add("valid");
                 elements.deadline.classList.remove("invalid");
             } else {
-                document.querySelector(".deadline-err").textContent = "Please give a time deadline of the task."
-                document.querySelector(".deadline-err").style.display = "block";
-                elements.deadline.classList.remove("valid");
-                elements.deadline.classList.add("invalid");
-            }
-
-            if (elements.deadline.validity.rangeOverflow) {
-                document.querySelector(".deadline-err").textContent = "deadline should be under 8 hours."
-                document.querySelector(".deadline-err").style.display = "block";
-                elements.deadline.classList.remove("valid");
-                elements.deadline.classList.add("invalid");
-            } else if (elements.deadline.validity.rangeUnderflow) {
-                console.log("under 0");
-                document.querySelector(".deadline-err").textContent = "deadline should be at least 1 hour."
+                document.querySelector(".deadline-err").textContent = "Please input the task deadline."
                 document.querySelector(".deadline-err").style.display = "block";
                 elements.deadline.classList.remove("valid");
                 elements.deadline.classList.add("invalid");
@@ -168,7 +137,6 @@ function formInteractive() {
         e.preventDefault();
 
         const formValidity = HTML.form.checkValidity();
-
         if (formValidity) {
             const data = {
                 title: elements.title.value,
@@ -181,43 +149,36 @@ function formInteractive() {
             };
 
             clearForm();
-            post(data);
+            postCard(data);
         } else {
             console.log("Not valid form");
-            // if (!elements.title.checkValidity()) {
-            //     document.querySelector(".title-err").style.display = "block";
-            // }
+            if (!elements.title.checkValidity()) {
+                elements.title.classList.remove("valid");
+            }
 
-            // if (!elements.description.checkValidity()) {
-            //     document.querySelector(".description-err").style.display = "block";
-            // }
+            if (!elements.description.checkValidity()) {
+                elements.description.classList.remove("valid");
+            }
 
-            // if (!elements.creator.checkValidity()) {
-            //     document.querySelector(".creator-err").style.display = "block";
-            // }
+            if (!elements.creator.checkValidity()) {
+                elements.creator.classList.remove("valid");
+            }
 
-            // if (!elements.deadline.checkValidity()) {
-            //     document.querySelector(".deadline-err").style.display = "block";
-            // }
-
-            // if (!elements.deadline.checkValidity()) {
-            //     document.querySelector(".deadline-err").style.display = "block";
-            // }
-
-            // if (!elements.color.checkValidity()) {
-            //     document.querySelector(".color-err").style.display = "block";
-            // }
+            if (!elements.deadline.checkValidity()) {
+                elements.deadline.classList.remove("valid");
+            }
         }
     })
 }
 
+/* -------- clear form when submitted ------ */
 function clearForm() {
     elements.title.value = "";
     elements.description.value = "";
     elements.creator.value = "";
     elements.deadline.value = "";
     elements.deadline.value = "";
-    elements.color.value = "";
+    elements.color.value = "#000000";
 
     elements.title.classList.remove("valid");
     elements.description.classList.remove("valid");
@@ -229,13 +190,13 @@ function clearForm() {
     document.querySelector(".add-new").disabled = true;
 }
 
-//GET
-function get() {
+/* ---------- "GET" -------- */
+function getCards() {
     fetch(endpoint, {
             method: "get",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                "x-apiKey": `${apiKey}`,
+                "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             }
         })
@@ -243,8 +204,8 @@ function get() {
         .then(e => showData(e));
 }
 
-//POST
-function post(data) {
+/* ---------- "POST" -------- */
+function postCard(data) {
     showCard(data);
 
     const postData = JSON.stringify(data);
@@ -252,7 +213,7 @@ function post(data) {
             method: "post",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                "x-apiKey": `${apiKey}`,
+                "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             },
             body: postData
@@ -261,15 +222,15 @@ function post(data) {
         .then(e => console.log(e));
 }
 
-//PUT 
-function put(id, data) {
-    const postData = JSON.stringify(data);
+/* ---------- "PUT" -------- */
+function updateCard(id, data) {
 
+    const postData = JSON.stringify(data);
     fetch(endpoint + "/" + id, {
             method: "put",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                "x-apiKey": `${apiKey}`,
+                "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             },
             body: postData
@@ -278,22 +239,21 @@ function put(id, data) {
         .then(e => console.log(e));
 }
 
-//DELETE
-function deleteIt(id) {
-    //Removes it immediately
-    document.querySelector(`article[data-id="${id}"]`).remove();
-
-    //Removes it from the database
+/* ---------- "DELETE" -------- */
+function deleteCard(id) {
     fetch(endpoint + "/" + id, {
             method: "delete",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                "x-apiKey": `${apiKey}`,
+                "x-apiKey": apiKey,
                 "cache-control": "no-cache"
             }
         })
         .then(e => e.json())
         .then(e => console.log(e));
+
+    //remove selected card from restdb
+    document.querySelector(`article[data-id="${id}"]`).remove();
 }
 
 function showData(data) {
@@ -304,6 +264,7 @@ function showData(data) {
     data.forEach(e => showCard(e));
 }
 
+/* ---------- template clone -------- */
 function showCard(e) {
     let dest = e.dest;
 
@@ -313,79 +274,37 @@ function showCard(e) {
     clone.querySelector(".title").textContent = e.title;
     clone.querySelector(".description").textContent = e.description;
     clone.querySelector(".creator").textContent += e.creator;
-    clone.querySelector(".deadline span+span").textContent = " " + e.deadline + "h";
-    clone.querySelector(".deadline span+span").textContent = " " + formatDate(e);
+    clone.querySelector(".deadline").textContent = " " + e.deadline + "h";
+    clone.querySelector(".deadline").textContent = " " + formatDate(e);
     clone.querySelector(".color").textContent = " " + e.color;
 
-
-    // clone.querySelector("button.update-this").addEventListener("click", () => {
-    //     put(e._id);
-    // })
-
-    if (dest === "done") {
-        clone.querySelector(".move-left").classList.add("visible");
-        clone.querySelector(".move-left").classList.remove("hidden");
-        clone.querySelector(".move-right").classList.add("hidden");
-        clone.querySelector(".move-right").classList.remove("visible");
-
-        clone.querySelector(".move-left").addEventListener("click", () => {
-            updateDest(e, "left");
-        });
-    } else if (dest === "progress") {
-        clone.querySelector(".move-left").classList.add("visible");
-        clone.querySelector(".move-left").classList.remove("hidden");
-        clone.querySelector(".move-right").classList.add("visible");
-        clone.querySelector(".move-right").classList.remove("hidden");
-
-
-        clone.querySelector(".move-left").addEventListener("click", () => {
-            updateDest(e, "left");
-        });
-
-        clone.querySelector(".move-right").addEventListener("click", () => {
-            updateDest(e, "right");
-        });
-    } else if (dest === "todo") {
-        clone.querySelector(".move-left").classList.add("hidden");
-        clone.querySelector(".move-left").classList.remove("visible");
-        clone.querySelector(".move-right").classList.add("visible");
-        clone.querySelector(".move-right").classList.remove("hidden");
-
-        clone.querySelector(".move-right").addEventListener("click", () => {
-            updateDest(e, "right");
-        });
-    }
+    clone.querySelector("button.edit-this").addEventListener("click", () => {
+        updateCard(e._id);
+    })
 
     clone.querySelector("button.delete-this").addEventListener("click", () => {
-        deleteIt(e._id);
+        deleteCard(e._id);
     })
 
     document.querySelector(".cards").appendChild(clone);
+    /* onDragStart(event); */
 }
 
-function updateDest(e, dir) {
-    let currentDest = e.dest;
-    let newDest;
-    let id = e._id;
+function todayDate() {
+    const currentDateTime = new Date();
 
-    if (currentDest === "todo" && dir === "right" || currentDest === "done" && dir === "left") {
-        newDest = "progress";
-    } else if (currentDest === "progress" && dir === "left") {
-        newDest = "todo";
-    } else if (currentDest === "progress" && dir === "right") {
-        newDest = "done";
+    let month = (currentDateTime.getMonth() + 1);
+    let day = currentDateTime.getDate();
+
+    if (day.toString().length === 1) {
+        day = "0" + day;
     }
 
-    const data = {
-        dest: newDest
-    };
+    if (month.toString().length === 1) {
+        month = "0" + month;
+    }
 
-    document.querySelector(`article[data-id="${id}"]`).remove();
-
-    e.dest = newDest;
-    showCard(e);
-
-    put(id, data);
+    return currentDateTime.getFullYear() + "-" + month + "-" + day;
 }
 
 function formatDate(e) {
@@ -394,5 +313,10 @@ function formatDate(e) {
     let month = fullDate.substring(5, 7);
 
     return day + "/" + month;
+}
 
+function onDragStart(event) {
+    event
+        .dataTransfer
+        .setData('text/plain', event.target.id).backgroundColor = 'yellow';
 }
